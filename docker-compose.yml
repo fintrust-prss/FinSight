@@ -1,0 +1,122 @@
+version: "3.9"
+
+# ==============================================================
+# MSME Financial Health Card — Docker Compose (Local Dev)
+# ==============================================================
+#
+# Services:
+#   postgres   — Postgres 15 (persistent local volume)
+#   backend    — FastAPI + Uvicorn (hot-reload)
+#   frontend   — Vite dev server (hot-reload)
+#
+# Usage:
+#   make dev          →  docker compose up --build
+#   make dev-backend  →  docker compose up backend postgres
+# ==============================================================
+
+services:
+
+  # -----------------------------------------------
+  # PostgreSQL 15 — Transactional + feature store
+  # -----------------------------------------------
+  postgres:
+    image: postgres:15-alpine
+    container_name: msme_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-msme_healthcard}
+      POSTGRES_USER: ${POSTGRES_USER:-msme_app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me_in_production}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/scripts/init_db.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-msme_app} -d ${POSTGRES_DB:-msme_healthcard}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - msme_net
+
+  # -----------------------------------------------
+  # Backend — FastAPI (Python 3.11)
+  # -----------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    container_name: msme_backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Override DB host to use compose service name
+      POSTGRES_HOST: postgres
+      APP_ENV: development
+      CLOUD_PROVIDER: gcp
+    ports:
+      - "8000:8000"
+    volumes:
+      # Hot-reload: mount source code
+      - ./backend/app:/app/app:ro
+      - ./backend/config:/app/config:ro
+      - ./backend/tests:/app/tests:ro
+      # Synthetic data volume (read-write for generator)
+      - synthetic_data:/app/data/synthetic
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      - msme_net
+
+  # -----------------------------------------------
+  # Frontend — React + Vite dev server
+  # -----------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+    container_name: msme_frontend
+    restart: unless-stopped
+    environment:
+      VITE_API_BASE_URL: http://localhost:8000
+      VITE_APP_ENV: development
+    ports:
+      - "5173:5173"
+    volumes:
+      # Hot-reload: mount source code (exclude node_modules)
+      - ./frontend/src:/app/src:ro
+      - ./frontend/public:/app/public:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - msme_net
+
+# -----------------------------------------------
+# Volumes
+# -----------------------------------------------
+volumes:
+  postgres_data:
+    name: msme_postgres_data
+  synthetic_data:
+    name: msme_synthetic_data
+
+# -----------------------------------------------
+# Networks
+# -----------------------------------------------
+networks:
+  msme_net:
+    name: msme_network
+    driver: bridge
