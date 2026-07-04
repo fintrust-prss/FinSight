@@ -184,8 +184,8 @@ def create_app() -> FastAPI:
         )
 
     # ---- API v1 Routers (registered in Phase 5) ----
-    # from app.api.v1 import router as api_v1_router
-    # app.include_router(api_v1_router, prefix="/api/v1")
+    from app.api.v1.router import router as api_v1_router
+    app.include_router(api_v1_router, prefix="/api/v1")
 
     # ---- Global Exception Handler ----
     @app.exception_handler(Exception)

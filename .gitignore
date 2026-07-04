@@ -1,0 +1,65 @@
+# ===== Project-level ignore for FinSight =====
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+.venv/
+venv/
+backend/.venv/
+pip-wheel-metadata/
+*.egg-info/
+dist/
+build/
+htmlcov/
+.coverage
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environment / secrets
+.env
+.env.*
+*.env
+.env.local
+
+# Node
+node_modules/
+frontend/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+
+# Vite / frontend build
+frontend/dist/
+.vite/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Docker
+docker-compose.override.yml
+
+# PostgreSQL / local volumes (if created locally by developer)
+msme_postgres_data/
+msme_synthetic_data/
+
+# Misc
+coverage.xml
+coverage/
+/.cache/

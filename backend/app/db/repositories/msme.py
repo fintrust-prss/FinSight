@@ -92,5 +92,7 @@ class MSMERepository(BaseRepository[MSME]):
         existing = await self.get_by_msme_id(msme_id)
         if existing:
             return await self.update(existing, data)
-        instance = MSME(msme_id=msme_id, **data)
+        create_data = data.copy()
+        create_data["msme_id"] = msme_id
+        instance = MSME(**create_data)
         return await self.create(instance)
