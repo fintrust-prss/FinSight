@@ -1,0 +1,59 @@
+msme_id: "msme_sakhi_001"
+legal_name: "Sakhi Mahila Papad Udyog"
+udyam_number: "UDYAM-GJ-01-0012345"
+sector: "manufacturing"
+sub_sector: "food_processing"
+vintage_years: 12
+state: "Gujarat"
+registration_type: "cooperative"
+
+# Generation settings
+history_months: 24
+seed: 101
+
+# Financial Profile (Disciplined, steady growth, low volatility)
+financials:
+  base_turnover: 1500000.0  # INR 15 Lakh monthly base
+  growth_trend_mom: 0.005    # 0.5% growth MoM
+  seasonality_peak_month: 11 # November (Diwali/festive spike)
+  seasonality_amplitude: 0.25 # 25% increase during peak
+  cashflow_volatility_std: 0.05 # low variance
+  bank_inflow_ratio: 0.95   # percentage of GST turnover in bank statement
+  avg_balance_ratio: 0.35   # keeps ~35% of monthly inflow as balance
+  upi_ratio: 0.60           # 60% of sales through UPI
+  upi_p2m_ratio: 0.85       # high business ratio
+  upi_counterparty_count: 45 # highly diverse buyers
+  cheque_bounce_probability: 0.0
+  overdraft_days: 0
+
+# Compliance & Labour
+compliance:
+  gst_filing_delay_prob: 0.0
+  epfo_registered: true
+  epfo_headcount_base: 45
+  epfo_headcount_growth_mom: 0.015 # 1.5% headcount growth
+  epfo_missed_months: []
+  wage_bill_per_employee: 12000.0
+  license_status: "valid"
+
+# Utility
+utility:
+  utility_type: "electricity"
+  sanctioned_load_kwh: 50
+  base_units_consumed: 3500 # ~70% load utilization
+  payment_delay_days_prob: 0.0
+  disconnection_events: []
+
+# Digital Presence
+digital:
+  ondc_orders_base: 40
+  ecommerce_orders_base: 80
+  gmb_rating: 4.5
+  gmb_review_count_base: 120
+
+# Bureau
+bureau:
+  has_file: true
+  score: 785
+  enquiries_last_6m: 0
+  existing_loans: 1

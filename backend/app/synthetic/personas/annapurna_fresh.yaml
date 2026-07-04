@@ -1,0 +1,59 @@
+msme_id: "msme_annapurna_002"
+legal_name: "Annapurna Fresh Snacks Co."
+udyam_number: "UDYAM-UP-02-0098765"
+sector: "manufacturing"
+sub_sector: "food_processing"
+vintage_years: 2.5
+state: "Uttar Pradesh"
+registration_type: "sole_proprietorship"
+
+# Generation settings
+history_months: 24
+seed: 202
+
+# Financial Profile (Volatile, irregular, concentration risk)
+financials:
+  base_turnover: 600000.0   # INR 6 Lakh monthly base
+  growth_trend_mom: 0.001    # almost flat
+  seasonality_peak_month: 10 # October
+  seasonality_amplitude: 0.15
+  cashflow_volatility_std: 0.22 # high volatility
+  bank_inflow_ratio: 0.85
+  avg_balance_ratio: 0.08   # keeps very low balance (8% of inflow)
+  upi_ratio: 0.70
+  upi_p2m_ratio: 0.45       # lots of P2P transfers (less formal digital payment setup)
+  upi_counterparty_count: 5  # high concentration risk (only 5 counterparties)
+  cheque_bounce_probability: 0.15 # ~15% chance of bounces
+  overdraft_days: 12         # frequent OD usage
+
+# Compliance & Labour
+compliance:
+  gst_filing_delay_prob: 0.25 # 25% chance of late filing
+  epfo_registered: true
+  epfo_headcount_base: 8
+  epfo_headcount_growth_mom: 0.0
+  epfo_missed_months: [6]    # Missed month index 6 (e.g. December)
+  wage_bill_per_employee: 9500.0
+  license_status: "valid"
+
+# Utility
+utility:
+  utility_type: "electricity"
+  sanctioned_load_kwh: 20
+  base_units_consumed: 1600 # high/erratic load utilization
+  payment_delay_days_prob: 0.40 # 40% delay probability
+  disconnection_events: [15] # Disconnected at month index 15
+
+# Digital Presence
+digital:
+  ondc_orders_base: 5
+  ecommerce_orders_base: 10
+  gmb_rating: 3.2
+  gmb_review_count_base: 12
+
+# Bureau
+bureau:
+  has_file: false # Thin file / credit invisible
+  score: null
+  enquiries_last_6m: 4
+  existing_loans: 0
