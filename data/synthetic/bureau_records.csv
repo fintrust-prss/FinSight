@@ -1,3 +1,9 @@
 msme_id,has_file,score,enquiries_last_6m,existing_loans
 msme_annapurna_002,False,,4,0
+msme_artisantextiles_008,True,420,5,1
+msme_chaiexpress_007,True,680,3,1
+msme_elitemotors_006,True,820,0,2
+msme_goldenharvest_005,True,520,1,1
+msme_retailmart_004,True,710,2,1
 msme_sakhi_001,True,785,0,1
+msme_techmart_003,False,,6,0

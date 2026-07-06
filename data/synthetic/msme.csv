@@ -1,3 +1,9 @@
 msme_id,legal_name,udyam_number,sector,sub_sector,vintage_years,state,registration_type
 msme_annapurna_002,Annapurna Fresh Snacks Co.,UDYAM-UP-02-0098765,manufacturing,food_processing,2.5,Uttar Pradesh,sole_proprietorship
+msme_artisantextiles_008,Artisan Textiles Weavers Cooperative,UDYAM-TN-08-0667788,manufacturing,textiles_handloom,6.0,Tamil Nadu,cooperative
+msme_chaiexpress_007,Chai Express Logistics,UDYAM-HR-07-0445566,services,logistics_transport,2.8,Haryana,partnership
+msme_elitemotors_006,Elite Motors Auto Components Pvt Ltd,UDYAM-TG-06-0778899,manufacturing,auto_components,9.2,Telangana,private_limited
+msme_goldenharvest_005,Golden Harvest Dairy Cooperative,UDYAM-AP-05-0334455,agriculture,dairy_animal_husbandry,7.5,Andhra Pradesh,cooperative
+msme_retailmart_004,Metro Retail Mart,UDYAM-MH-04-0112233,trade,retail_ecommerce,3.5,Maharashtra,sole_proprietorship
 msme_sakhi_001,Sakhi Mahila Papad Udyog,UDYAM-GJ-01-0012345,manufacturing,food_processing,12.0,Gujarat,cooperative
+msme_techmart_003,TechMart Solutions Pvt Ltd,UDYAM-KA-03-0054321,services,it_services,1.5,Karnataka,private_limited

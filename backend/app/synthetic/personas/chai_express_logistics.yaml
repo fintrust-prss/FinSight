@@ -1,0 +1,59 @@
+msme_id: "msme_chaiexpress_007"
+legal_name: "Chai Express Logistics"
+udyam_number: "UDYAM-HR-07-0445566"
+sector: "services"
+sub_sector: "logistics_transport"
+vintage_years: 2.8
+state: "Haryana"
+registration_type: "partnership"
+
+# Generation settings
+history_months: 24
+seed: 707
+
+# Financial Profile (Growing but volatile, fuel-price sensitive)
+financials:
+  base_turnover: 1100000.0  # INR 11 Lakh monthly base
+  growth_trend_mom: 0.05    # 5% growth (expanding fleet)
+  seasonality_peak_month: 8 # August (monsoon/festival freight spike)
+  seasonality_amplitude: 0.22
+  cashflow_volatility_std: 0.18 # Volatile (fuel, maintenance)
+  bank_inflow_ratio: 0.90
+  avg_balance_ratio: 0.14   # Reinvests in fleet
+  upi_ratio: 0.55           # Mix of UPI + bank transfers
+  upi_p2m_ratio: 0.80
+  upi_counterparty_count: 60 # Many smaller clients
+  cheque_bounce_probability: 0.06
+  overdraft_days: 8
+
+# Compliance & Labour
+compliance:
+  gst_filing_delay_prob: 0.12
+  epfo_registered: true
+  epfo_headcount_base: 22
+  epfo_headcount_growth_mom: 0.04 # Adding drivers as fleet grows
+  epfo_missed_months: [4] # One gap during lean month
+  wage_bill_per_employee: 16000.0
+  license_status: "valid"   # FMCG/transport licenses valid
+
+# Utility
+utility:
+  utility_type: "electricity"
+  sanctioned_load_kwh: 50   # Parking yard electricity
+  base_units_consumed: 2800 # Yard lighting + cold storage
+  payment_delay_days_prob: 0.08
+  disconnection_events: []
+
+# Digital Presence
+digital:
+  ondc_orders_base: 0
+  ecommerce_orders_base: 0
+  gmb_rating: 3.9
+  gmb_review_count_base: 75 # Fleet reviews
+
+# Bureau
+bureau:
+  has_file: true
+  score: 680
+  enquiries_last_6m: 3
+  existing_loans: 1

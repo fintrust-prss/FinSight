@@ -1,0 +1,59 @@
+msme_id: "msme_goldenharvest_005"
+legal_name: "Golden Harvest Dairy Cooperative"
+udyam_number: "UDYAM-AP-05-0334455"
+sector: "agriculture"
+sub_sector: "dairy_animal_husbandry"
+vintage_years: 7.5
+state: "Andhra Pradesh"
+registration_type: "cooperative"
+
+# Generation settings
+history_months: 24
+seed: 505
+
+# Financial Profile (Highly seasonal, monsoon-dependent, low baseline)
+financials:
+  base_turnover: 450000.0   # INR 4.5 Lakh monthly base
+  growth_trend_mom: 0.002   # 0.2% minimal growth (commodity-based)
+  seasonality_peak_month: 3 # March (summer peak dairy)
+  seasonality_amplitude: 0.60 # Extreme seasonality (60% swing)
+  cashflow_volatility_std: 0.35 # Very volatile (weather, input prices)
+  bank_inflow_ratio: 0.75
+  avg_balance_ratio: 0.06   # Very low cash reserves
+  upi_ratio: 0.25           # Limited digital adoption (rural)
+  upi_p2m_ratio: 0.65
+  upi_counterparty_count: 8 # Limited buyer network
+  cheque_bounce_probability: 0.20 # Frequent bounces (cash flow)
+  overdraft_days: 18
+
+# Compliance & Labour
+compliance:
+  gst_filing_delay_prob: 0.30 # Often late (rural, low capacity)
+  epfo_registered: true
+  epfo_headcount_base: 15
+  epfo_headcount_growth_mom: 0.0 # Stable, no growth
+  epfo_missed_months: [3, 9] # Missed during drought/fodder shortage
+  wage_bill_per_employee: 8000.0 # Lower rural wages
+  license_status: "valid"
+
+# Utility
+utility:
+  utility_type: "water"      # Water is the critical utility
+  sanctioned_load_kwh: 40
+  base_units_consumed: 4500 # High water usage for dairy
+  payment_delay_days_prob: 0.35 # Often delayed (cash flow issues)
+  disconnection_events: [12, 20] # Multiple disconnections (drought seasons)
+
+# Digital Presence
+digital:
+  ondc_orders_base: 10 # Minimal digital presence
+  ecommerce_orders_base: 0
+  gmb_rating: 3.5
+  gmb_review_count_base: 15
+
+# Bureau
+bureau:
+  has_file: true
+  score: 520 # Below average (agriculture risk)
+  enquiries_last_6m: 1
+  existing_loans: 1
