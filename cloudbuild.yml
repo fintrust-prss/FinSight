@@ -160,7 +160,7 @@ substitutions:
   _DB_HOST: 'project-90c2d7bc-ca5b-4203-bd7:us-central1:msme-postgres'  # Format: project:region:instance
   _DB_PORT: '5432'
   _DB_NAME: 'msme_healthcard'
-  _BACKEND_URL: 'msme-backend-xxxx.run.app'
+  _BACKEND_URL: 'msme-backend-1030524684072-uc.a.run.app'
 
 # -----------------------------------------------
 # Build Options
