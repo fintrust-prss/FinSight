@@ -50,4 +50,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD wget -q --spider http://localhost/healthz || exit 1
 
 # Run nginx as non-root `appuser`. Set pid to /tmp to avoid writing to /run (root-owned tmpfs).
-CMD ["nginx", "-g", "pid /tmp/nginx.pid; daemon off;"]
+CMD ["nginx", "-g", "daemon off;"]
