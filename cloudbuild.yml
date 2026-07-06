@@ -1,0 +1,173 @@
+# ==============================================================
+# Cloud Build Configuration — MSME Financial Health Card
+# ==============================================================
+# Deployment pipeline for GCP Cloud Run
+# Triggers on: push to main branch
+# Steps:
+#   1. Build backend Docker image
+#   2. Build frontend Docker image
+#   3. Push to Artifact Registry
+#   4. Deploy backend to Cloud Run
+#   5. Deploy frontend to Cloud Run
+#   6. Run post-deployment tests
+# ==============================================================
+
+steps:
+
+  # -----------------------------------------------
+  # Step 1: Build Backend Docker Image
+  # -----------------------------------------------
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-backend'
+    args:
+      - 'build'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/msme-backend:${SHORT_SHA}'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/msme-backend:latest'
+      - '-f'
+      - 'backend/Dockerfile'
+      - '--target'
+      - 'production'
+      - './backend'
+
+  # -----------------------------------------------
+  # Step 2: Build Frontend Docker Image
+  # -----------------------------------------------
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-frontend'
+    args:
+      - 'build'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/msme-frontend:${SHORT_SHA}'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/msme-frontend:latest'
+      - '-f'
+      - 'frontend/Dockerfile'
+      - '--target'
+      - 'production'
+      - './frontend'
+
+  # -----------------------------------------------
+  # Step 3: Push Backend Image to Artifact Registry
+  # -----------------------------------------------
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-backend'
+    args:
+      - 'push'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/msme-backend:${SHORT_SHA}'
+    waitFor: ['build-backend']
+
+  # -----------------------------------------------
+  # Step 4: Push Frontend Image to Artifact Registry
+  # -----------------------------------------------
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-frontend'
+    args:
+      - 'push'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/msme-frontend:${SHORT_SHA}'
+    waitFor: ['build-frontend']
+
+  # -----------------------------------------------
+  # Step 5: Deploy Backend to Cloud Run
+  # -----------------------------------------------
+  - name: 'gcr.io/cloud-builders/run'
+    id: 'deploy-backend'
+    args:
+      - 'deploy'
+      - 'msme-backend'
+      - '--image'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/msme-backend:${SHORT_SHA}'
+      - '--region'
+      - '${_REGION}'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--set-env-vars'
+      - 'POSTGRES_HOST=${_DB_HOST},POSTGRES_PORT=${_DB_PORT},POSTGRES_DB=${_DB_NAME},CLOUD_PROVIDER=gcp,APP_ENV=production'
+      - '--set-secrets'
+      - 'POSTGRES_USER=postgres-user:latest,POSTGRES_PASSWORD=postgres-password:latest'
+      - '--memory'
+      - '2Gi'
+      - '--cpu'
+      - '2'
+      - '--timeout'
+      - '3600'
+      - '--max-instances'
+      - '10'
+    waitFor: ['push-backend']
+
+  # -----------------------------------------------
+  # Step 6: Deploy Frontend to Cloud Run
+  # -----------------------------------------------
+  - name: 'gcr.io/cloud-builders/run'
+    id: 'deploy-frontend'
+    args:
+      - 'deploy'
+      - 'msme-frontend'
+      - '--image'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/msme-frontend:${SHORT_SHA}'
+      - '--region'
+      - '${_REGION}'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--set-env-vars'
+      - 'VITE_API_BASE_URL=https://${_BACKEND_URL},VITE_APP_ENV=production'
+      - '--memory'
+      - '1Gi'
+      - '--cpu'
+      - '1'
+      - '--timeout'
+      - '3600'
+      - '--max-instances'
+      - '5'
+    waitFor: ['push-frontend']
+
+  # -----------------------------------------------
+  # Step 7: Post-Deployment Health Check
+  # -----------------------------------------------
+  - name: 'gcr.io/cloud-builders/gke-deploy'
+    id: 'health-check'
+    args:
+      - 'run'
+      - '-f=/workspace'
+      - '-l=app=msme-backend'
+      - '-o=gcr://console.cloud.google.com/run'
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=${_REGION}'
+    waitFor: ['deploy-backend', 'deploy-frontend']
+
+# -----------------------------------------------
+# Build Images Configuration
+# -----------------------------------------------
+images:
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/msme-backend:${SHORT_SHA}'
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/msme-backend:latest'
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/msme-frontend:${SHORT_SHA}'
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/msme-frontend:latest'
+
+# -----------------------------------------------
+# Substitutions (override via trigger or CLI)
+# -----------------------------------------------
+substitutions:
+  _REGION: 'us-central1'
+  _REPOSITORY: 'msme-healthcard'
+  _DB_HOST: 'cloudsql-connection-name'  # Format: project:region:instance
+  _DB_PORT: '5432'
+  _DB_NAME: 'msme_healthcard'
+  _BACKEND_URL: 'msme-backend-xxxx.run.app'
+
+# -----------------------------------------------
+# Build Options
+# -----------------------------------------------
+options:
+  machineType: 'N1_HIGHCPU_8'
+  logging: CLOUD_LOGGING_ONLY
+  
+timeout: '3600s'
+
+# -----------------------------------------------
+# Build Trigger Configuration (if using GitHub)
+# -----------------------------------------------
+# To connect: gcloud builds connect --repository-name=msme-financial-health-card --github-owner=YOUR_GITHUB_ORG --region=us-central1

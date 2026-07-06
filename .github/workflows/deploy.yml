@@ -1,0 +1,249 @@
+# ==============================================================
+# GitHub Actions Workflow — CI/CD Pipeline
+# ==============================================================
+# Triggers on: push to main branch
+# Jobs:
+#   1. Lint & Test (backend + frontend)
+#   2. Build & Push Docker images to Artifact Registry
+#   3. Deploy to Cloud Run
+# ==============================================================
+
+name: Deploy to GCP Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual trigger
+
+env:
+  REGION: us-central1
+  ARTIFACT_REGISTRY: msme-healthcard
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+
+jobs:
+
+  # -----------------------------------------------
+  # Job 1: Lint & Test Backend
+  # -----------------------------------------------
+  lint-test-backend:
+    runs-on: ubuntu-latest
+    name: Backend Lint & Test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Lint with ruff
+        working-directory: backend
+        run: python -m ruff check app/ tests/
+
+      - name: Format check with black
+        working-directory: backend
+        run: python -m black --check app/ tests/
+
+      - name: Type check with mypy
+        working-directory: backend
+        run: python -m mypy app/ --ignore-missing-imports
+
+      - name: Run backend tests
+        working-directory: backend
+        run: |
+          python -m pytest tests/ -v --tb=short --cov=app --cov-report=term-missing --cov-fail-under=85
+
+  # -----------------------------------------------
+  # Job 2: Lint & Test Frontend
+  # -----------------------------------------------
+  lint-test-frontend:
+    runs-on: ubuntu-latest
+    name: Frontend Lint & Test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Lint with ESLint
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Type check with TypeScript
+        working-directory: frontend
+        run: npm run type-check
+
+      - name: Run frontend tests
+        working-directory: frontend
+        run: npm run test:run
+
+  # -----------------------------------------------
+  # Job 3: Security Scan
+  # -----------------------------------------------
+  security-scan:
+    runs-on: ubuntu-latest
+    name: Security Scan
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Run bandit (Python security)
+        working-directory: backend
+        run: |
+          pip install bandit
+          bandit -r app/ --severity-level medium
+
+      - name: Run npm audit (Node security)
+        working-directory: frontend
+        run: npm audit --production
+
+  # -----------------------------------------------
+  # Job 4: Build & Push Docker Images
+  # -----------------------------------------------
+  build-push:
+    runs-on: ubuntu-latest
+    name: Build & Push Docker Images
+    needs: [lint-test-backend, lint-test-frontend, security-scan]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+
+      - name: Build and push backend image
+        run: |
+          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY }}/msme-backend:${{ github.sha }} \
+            -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY }}/msme-backend:latest \
+            -f backend/Dockerfile \
+            --target production \
+            ./backend
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY }}/msme-backend:${{ github.sha }}
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY }}/msme-backend:latest
+
+      - name: Build and push frontend image
+        run: |
+          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY }}/msme-frontend:${{ github.sha }} \
+            -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY }}/msme-frontend:latest \
+            -f frontend/Dockerfile \
+            --target production \
+            ./frontend
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY }}/msme-frontend:${{ github.sha }}
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY }}/msme-frontend:latest
+
+  # -----------------------------------------------
+  # Job 5: Deploy to Cloud Run
+  # -----------------------------------------------
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to Cloud Run
+    needs: build-push
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Deploy backend to Cloud Run
+        run: |
+          gcloud run deploy msme-backend \
+            --image=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY }}/msme-backend:${{ github.sha }} \
+            --region=${{ env.REGION }} \
+            --platform=managed \
+            --allow-unauthenticated \
+            --set-env-vars=POSTGRES_HOST=${{ secrets.DB_HOST }},POSTGRES_PORT=5432,POSTGRES_DB=msme_healthcard,CLOUD_PROVIDER=gcp,APP_ENV=production \
+            --memory=2Gi \
+            --cpu=2 \
+            --timeout=3600 \
+            --max-instances=10 \
+            --quiet
+
+      - name: Get backend URL
+        id: backend-url
+        run: |
+          BACKEND_URL=$(gcloud run services describe msme-backend --region=${{ env.REGION }} --format='value(status.url)')
+          echo "url=$BACKEND_URL" >> $GITHUB_OUTPUT
+
+      - name: Deploy frontend to Cloud Run
+        run: |
+          gcloud run deploy msme-frontend \
+            --image=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY }}/msme-frontend:${{ github.sha }} \
+            --region=${{ env.REGION }} \
+            --platform=managed \
+            --allow-unauthenticated \
+            --set-env-vars=VITE_API_BASE_URL=${{ steps.backend-url.outputs.url }},VITE_APP_ENV=production \
+            --memory=1Gi \
+            --cpu=1 \
+            --timeout=3600 \
+            --max-instances=5 \
+            --quiet
+
+      - name: Get frontend URL
+        id: frontend-url
+        run: |
+          FRONTEND_URL=$(gcloud run services describe msme-frontend --region=${{ env.REGION }} --format='value(status.url)')
+          echo "url=$FRONTEND_URL" >> $GITHUB_OUTPUT
+
+      - name: Post deployment summary
+        run: |
+          echo "✅ Deployment successful!"
+          echo "Backend: ${{ steps.backend-url.outputs.url }}"
+          echo "Frontend: ${{ steps.frontend-url.outputs.url }}"
