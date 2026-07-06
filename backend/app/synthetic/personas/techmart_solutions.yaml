@@ -1,0 +1,59 @@
+msme_id: "msme_techmart_003"
+legal_name: "TechMart Solutions Pvt Ltd"
+udyam_number: "UDYAM-KA-03-0054321"
+sector: "services"
+sub_sector: "it_services"
+vintage_years: 1.5
+state: "Karnataka"
+registration_type: "private_limited"
+
+# Generation settings
+history_months: 24
+seed: 303
+
+# Financial Profile (Explosive growth, high volatility, tech startup style)
+financials:
+  base_turnover: 800000.0   # INR 8 Lakh monthly base
+  growth_trend_mom: 0.08    # 8% aggressive growth MoM (typical SaaS/IT startup)
+  seasonality_peak_month: 9 # September (Q2 quarter-end)
+  seasonality_amplitude: 0.35 # High seasonal variance
+  cashflow_volatility_std: 0.28 # Volatile revenue (project-based)
+  bank_inflow_ratio: 0.92
+  avg_balance_ratio: 0.12   # Reinvests most cash back
+  upi_ratio: 0.45           # Lower UPI (mostly bank transfers for B2B)
+  upi_p2m_ratio: 0.90       # All P2M (B2B invoicing)
+  upi_counterparty_count: 25 # Moderate customer base
+  cheque_bounce_probability: 0.08
+  overdraft_days: 5
+
+# Compliance & Labour
+compliance:
+  gst_filing_delay_prob: 0.10 # Occasional delays (startup disorganization)
+  epfo_registered: true
+  epfo_headcount_base: 12
+  epfo_headcount_growth_mom: 0.10 # Aggressive hiring
+  epfo_missed_months: [] # Generally compliant
+  wage_bill_per_employee: 35000.0 # Higher salaries (IT sector)
+  license_status: "valid"
+
+# Utility
+utility:
+  utility_type: "electricity"
+  sanctioned_load_kwh: 25
+  base_units_consumed: 1200 # Office-based, moderate usage
+  payment_delay_days_prob: 0.05
+  disconnection_events: [] # No issues
+
+# Digital Presence
+digital:
+  ondc_orders_base: 0 # Not relevant for IT services
+  ecommerce_orders_base: 0
+  gmb_rating: 4.2
+  gmb_review_count_base: 45
+
+# Bureau
+bureau:
+  has_file: false # New to credit
+  score: null
+  enquiries_last_6m: 6 # Multiple credit applications
+  existing_loans: 0
