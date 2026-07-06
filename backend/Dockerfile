@@ -35,7 +35,7 @@ FROM builder AS development
 # Dev deps already installed in builder
 COPY . .
 
-USER appuser
+USER root
 
 EXPOSE 8000
 
@@ -59,7 +59,7 @@ COPY app/ ./app/
 COPY config/ ./config/
 
 RUN chown -R appuser:appuser /app
-USER appuser
+USER root
 
 EXPOSE 8000
 

@@ -33,16 +33,14 @@ FROM nginx:1.27-alpine AS production
 
 # Copy Vite build output
 COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Nginx config for SPA (all routes → index.html)
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 
 RUN addgroup -g 1001 -S appuser && \
     adduser -S -u 1001 -G appuser appuser && \
     chown -R appuser:appuser /var/cache/nginx /var/run /var/log/nginx /usr/share/nginx/html && \
     chmod -R 755 /usr/share/nginx/html
 
-USER appuser
+USER root
 
 EXPOSE 80
 
