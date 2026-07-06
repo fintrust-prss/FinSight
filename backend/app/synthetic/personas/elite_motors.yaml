@@ -1,0 +1,59 @@
+msme_id: "msme_elitemotors_006"
+legal_name: "Elite Motors Auto Components Pvt Ltd"
+udyam_number: "UDYAM-TG-06-0778899"
+sector: "manufacturing"
+sub_sector: "auto_components"
+vintage_years: 9.2
+state: "Telangana"
+registration_type: "private_limited"
+
+# Generation settings
+history_months: 24
+seed: 606
+
+# Financial Profile (Stable manufacturing, export-led, steady)
+financials:
+  base_turnover: 3200000.0  # INR 32 Lakh monthly base (large for MSME)
+  growth_trend_mom: 0.01    # 1% steady growth
+  seasonality_peak_month: 6 # June (Q1 OEM ordering)
+  seasonality_amplitude: 0.18
+  cashflow_volatility_std: 0.08 # Low volatility (long-term contracts)
+  bank_inflow_ratio: 0.98
+  avg_balance_ratio: 0.40   # Healthy reserves
+  upi_ratio: 0.30           # Mostly direct bank transfers (B2B)
+  upi_p2m_ratio: 0.95       # 100% B2B invoicing
+  upi_counterparty_count: 12 # Few but large OEM customers
+  cheque_bounce_probability: 0.0
+  overdraft_days: 0
+
+# Compliance & Labour
+compliance:
+  gst_filing_delay_prob: 0.0 # Always on time
+  epfo_registered: true
+  epfo_headcount_base: 85    # Large workforce
+  epfo_headcount_growth_mom: 0.005
+  epfo_missed_months: []
+  wage_bill_per_employee: 18000.0
+  license_status: "valid"    # ISO certified
+
+# Utility
+utility:
+  utility_type: "electricity"
+  sanctioned_load_kwh: 150   # Heavy manufacturing
+  base_units_consumed: 9500  # ~63% utilization
+  payment_delay_days_prob: 0.0
+  disconnection_events: []
+
+# Digital Presence
+digital:
+  ondc_orders_base: 0
+  ecommerce_orders_base: 0
+  gmb_rating: 4.1
+  gmb_review_count_base: 60
+
+# Bureau
+bureau:
+  has_file: true
+  score: 820 # Excellent (export & manufacturing track record)
+  enquiries_last_6m: 0
+  existing_loans: 2 # Multiple bank relationships
