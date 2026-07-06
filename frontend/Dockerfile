@@ -33,7 +33,7 @@ FROM nginx:1.27-alpine AS production
 
 # Copy Vite build output
 COPY --from=builder /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 RUN addgroup -g 1001 -S appuser && \
     adduser -S -u 1001 -G appuser appuser && \
