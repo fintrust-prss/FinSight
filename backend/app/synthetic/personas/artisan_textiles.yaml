@@ -1,0 +1,59 @@
+msme_id: "msme_artisantextiles_008"
+legal_name: "Artisan Textiles Weavers Cooperative"
+udyam_number: "UDYAM-TN-08-0667788"
+sector: "manufacturing"
+sub_sector: "textiles_handloom"
+vintage_years: 6.0
+state: "Tamil Nadu"
+registration_type: "cooperative"
+
+# Generation settings
+history_months: 24
+seed: 808
+
+# Financial Profile (Declining, high raw material cost volatility, low margins)
+financials:
+  base_turnover: 550000.0   # INR 5.5 Lakh monthly base
+  growth_trend_mom: -0.01   # -1% declining (traditional textiles in decline)
+  seasonality_peak_month: 5 # May (summer apparel season)
+  seasonality_amplitude: 0.40
+  cashflow_volatility_std: 0.25 # Volatile (yarn prices, order unpredictability)
+  bank_inflow_ratio: 0.82
+  avg_balance_ratio: 0.05   # Minimal liquidity
+  upi_ratio: 0.15           # Very low digital adoption (artisan-heavy)
+  upi_p2m_ratio: 0.60
+  upi_counterparty_count: 4  # Dependent on 3–4 bulk buyers
+  cheque_bounce_probability: 0.25 # Frequent bounces
+  overdraft_days: 20
+
+# Compliance & Labour
+compliance:
+  gst_filing_delay_prob: 0.40 # Often late (low digital literacy)
+  epfo_registered: true
+  epfo_headcount_base: 28
+  epfo_headcount_growth_mom: -0.02 # Declining (low orders)
+  epfo_missed_months: [2, 8, 14, 20] # Frequent gaps (cash flow)
+  wage_bill_per_employee: 7500.0 # Low artisan wages
+  license_status: "valid"   # Handloom board registered
+
+# Utility
+utility:
+  utility_type: "electricity"
+  sanctioned_load_kwh: 35
+  base_units_consumed: 1800 # Aging looms
+  payment_delay_days_prob: 0.45 # Very delayed (cash crisis)
+  disconnection_events: [9, 18, 23] # Multiple crisis disconnections
+
+# Digital Presence
+digital:
+  ondc_orders_base: 0 # No ONDC participation
+  ecommerce_orders_base: 5  # Minimal e-commerce
+  gmb_rating: 3.1
+  gmb_review_count_base: 8
+
+# Bureau
+bureau:
+  has_file: true
+  score: 420 # High risk (declining sector)
+  enquiries_last_6m: 5
+  existing_loans: 1 # Struggling to refinance
