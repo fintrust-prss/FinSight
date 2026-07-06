@@ -37,7 +37,7 @@ COPY . .
 
 USER root
 
-EXPOSE 8000
+EXPOSE 8080
 
 # Use --reload for hot-reload; source mounted via docker-compose volume
 CMD ["uvicorn", "app.main:create_app", \
