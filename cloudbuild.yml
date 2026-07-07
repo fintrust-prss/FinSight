@@ -38,6 +38,10 @@ steps:
     id: 'build-frontend'
     args:
       - 'build'
+      - '--build-arg'
+      - 'VITE_API_BASE_URL=https://${_BACKEND_URL}'
+      - '--build-arg'
+      - 'VITE_APP_ENV=production'
       - '-t'
       - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/msme-frontend:${SHORT_SHA}'
       - '-t'

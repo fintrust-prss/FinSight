@@ -25,6 +25,10 @@ CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 
 # ---- Production Build ----
 FROM deps AS builder
+ARG VITE_API_BASE_URL=
+ARG VITE_APP_ENV=production
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+ENV VITE_APP_ENV=$VITE_APP_ENV
 COPY . .
 RUN npm run build
 
