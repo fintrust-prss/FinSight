@@ -33,7 +33,8 @@ FROM nginx:1.27-alpine AS production
 
 # Copy Vite build output
 COPY --from=builder /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 RUN addgroup -g 1001 -S appuser && \
     adduser -S -u 1001 -G appuser appuser && \
@@ -47,5 +48,4 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD wget -q --spider http://localhost/healthz || exit 1
 
-# Run nginx as non-root `appuser`. Set pid to /tmp to avoid writing to /run (root-owned tmpfs).
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["/docker-entrypoint.sh"]

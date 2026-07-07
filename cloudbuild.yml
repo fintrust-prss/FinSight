@@ -117,7 +117,7 @@ steps:
       - 'managed'
       - '--allow-unauthenticated'
       - '--set-env-vars'
-      - 'VITE_API_BASE_URL=https://${_BACKEND_URL},VITE_APP_ENV=production'
+      - 'BACKEND_URL=https://${_BACKEND_URL},VITE_APP_ENV=production'
       - '--memory'
       - '1Gi'
       - '--cpu'
@@ -128,19 +128,6 @@ steps:
       - '5'
     waitFor: ['push-frontend']
 
-  # -----------------------------------------------
-  # Step 7: Post-Deployment Health Check
-  # -----------------------------------------------
-  - name: 'gcr.io/cloud-builders/gke-deploy'
-    id: 'health-check'
-    args:
-      - 'run'
-      - '-f=/workspace'
-      - '-l=app=msme-backend'
-      - '-o=gcr://console.cloud.google.com/run'
-    env:
-      - 'CLOUDSDK_COMPUTE_REGION=${_REGION}'
-    waitFor: ['deploy-backend', 'deploy-frontend']
 
 # -----------------------------------------------
 # Build Images Configuration

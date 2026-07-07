@@ -4,8 +4,9 @@
  */
 import axios from 'axios'
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL
-  ? `${import.meta.env.VITE_API_BASE_URL}/api/v1`
+const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.BACKEND_URL
+const BASE_URL = configuredBaseUrl
+  ? `${configuredBaseUrl.replace(/\/$/, '')}/api/v1`
   : '/api/v1'
 
 const apiClient = axios.create({
