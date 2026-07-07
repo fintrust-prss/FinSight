@@ -9,10 +9,6 @@ import {
   PolarRadiusAxis,
   RadialBarChart,
   RadialBar,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
   Tooltip,
   Cell,
   ResponsiveContainer,
@@ -20,7 +16,7 @@ import {
 import {
   fetchMSMEProfile,
   fetchMSMEScore,
-  fetchMSMEExplain,
+  // fetchMSMEExplain,
   fetchMSMEHistory,
   postConsent,
 } from '../api/msme'
@@ -43,15 +39,17 @@ function dimLabel(key: string): string {
   return DIM_LABELS[key] ?? key.replace(/_/g, ' ')
 }
 
-/* ─── colour for SHAP bars ────────────────────────────────────────────────── */
+/* ─── colour for SHAP bars (kept commented for future restoration) ───────────── */
+/*
 function shapColor(val: number) {
   return val >= 0 ? '#10b981' : '#ef4444'
 }
+*/
 
 export default function HealthCardPage() {
   const { id: msmeId } = useParams<{ id: string }>()
   const qc = useQueryClient()
-  const [consentGranted, setConsentGranted] = useState(false)
+  // const [consentGranted, setConsentGranted] = useState(false)
   const [activeTab, setActiveTab] = useState<'radar' | 'gauge' | 'shap'>('radar')
 
   /* ── Profile ── */
@@ -73,13 +71,15 @@ export default function HealthCardPage() {
     },
   })
 
-  /* ── Explain ── */
+  /* ── Explain (kept commented for future SHAP restoration) ── */
+  /*
   const explainQ = useQuery({
     queryKey: ['msme-explain', msmeId],
     queryFn: () => fetchMSMEExplain(msmeId!),
     enabled: !!msmeId && (scoreQ.isSuccess || consentGranted),
     retry: false,
   })
+  */
 
   /* ── History ── */
   const historyQ = useQuery({
@@ -93,7 +93,7 @@ export default function HealthCardPage() {
   const consentMut = useMutation({
     mutationFn: () => postConsent(msmeId!),
     onSuccess: () => {
-      setConsentGranted(true)
+      // setConsentGranted(true)
       qc.invalidateQueries({ queryKey: ['msme-score', msmeId] })
       qc.invalidateQueries({ queryKey: ['msme-explain', msmeId] })
     },
@@ -129,7 +129,8 @@ export default function HealthCardPage() {
   const overallScore = scoreQ.data?.overall_score ?? 0
   const gaugeData = [{ name: 'score', value: overallScore }]
 
-  /* ── SHAP data ── */
+  /* ── SHAP data (kept commented for future restoration) ── */
+  /*
   const shapData = explainQ.data
     ? Object.entries(explainQ.data.shap_summary)
         .map(([key, value]) => ({
@@ -139,6 +140,7 @@ export default function HealthCardPage() {
         .sort((a, b) => Math.abs(b.value) - Math.abs(a.value))
         .slice(0, 8)
     : []
+  */
 
   const tier = scoreQ.data?.tier ?? 'Non-Disciplined'
   const tierColor = tierHex(tier)
