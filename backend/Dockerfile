@@ -43,7 +43,7 @@ EXPOSE 8080
 CMD ["uvicorn", "app.main:create_app", \
      "--factory", \
      "--host", "0.0.0.0", \
-     "--port", "8000", \
+     "--port", "8080", \
      "--reload", \
      "--log-level", "info"]
 
@@ -61,13 +61,13 @@ COPY config/ ./config/
 RUN chown -R appuser:appuser /app
 USER root
 
-EXPOSE 8000
+EXPOSE 8080
 
 # Production: multiple workers, no reload
 CMD ["uvicorn", "app.main:create_app", \
      "--factory", \
      "--host", "0.0.0.0", \
-     "--port", "8000", \
+     "--port", "8080", \
      "--workers", "2", \
      "--log-level", "info", \
      "--access-log"]

@@ -160,7 +160,7 @@ substitutions:
   _DB_HOST: '35.253.187.42'  # Format: project:region:instance
   _DB_PORT: '5432'
   _DB_NAME: 'msme_healthcard'
-  _BACKEND_URL: 'msme-backend-1030524684072-uc.a.run.app'
+  _BACKEND_URL: 'msme-backend-1030524684072.us-central1.run.app'
 
 # -----------------------------------------------
 # Build Options
