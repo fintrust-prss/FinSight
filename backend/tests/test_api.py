@@ -75,6 +75,20 @@ def test_token_issuance(client: TestClient):
     assert body["role"] == "bank_officer"
 
 
+def test_token_endpoint_allows_cloud_run_preflight(client: TestClient):
+    """OPTIONS preflight from a Cloud Run frontend origin should be accepted."""
+    resp = client.options(
+        "/api/v1/auth/token",
+        headers={
+            "Origin": "https://msme-frontend-12345-uc.a.run.app",
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "content-type",
+        },
+    )
+    assert resp.status_code == 200
+    assert resp.headers.get("access-control-allow-origin") == "https://msme-frontend-12345-uc.a.run.app"
+
+
 # ===========================================================================
 # 2. RBAC & MSME Endpoint Tests
 # ===========================================================================

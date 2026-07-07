@@ -21,6 +21,7 @@ dependencies = [
 
     # Database
     "sqlalchemy>=2.0.30",
+    "aiosqlite>=0.10.0",       # Async SQLite driver for tests and local dev
     "asyncpg>=0.29.0",         # Async Postgres driver
     "alembic>=1.13.0",          # DB migrations
 
