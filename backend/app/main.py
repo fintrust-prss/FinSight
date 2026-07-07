@@ -18,8 +18,10 @@ Design decisions:
 
 from __future__ import annotations
 
+import os
 import time
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import AsyncGenerator
 
 import structlog
@@ -66,9 +68,34 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         api_version="v1",
     )
 
-    # TODO (Phase 2): Initialize DB engine + connection pool
-    # TODO (Phase 2): Initialize adapter factory from CLOUD_PROVIDER env var
-    # TODO (Phase 2): Run Alembic migrations on startup (dev only)
+    backend_dir = Path(__file__).resolve().parent.parent
+
+    # Initialize database schema and seed data on startup when running in production.
+    try:
+        from app.db.session import Base
+        import app.db.models  # noqa: F401
+
+        from sqlalchemy.ext.asyncio import create_async_engine
+
+        engine = create_async_engine(settings.database_url)
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        await engine.dispose()
+        logger.info("database_schema_initialized")
+    except Exception as exc:
+        logger.warning("database_schema_initialization_failed", error=str(exc))
+
+    try:
+        if os.getenv("SEED_DATA_ON_STARTUP", "false").lower() == "true":
+            from app.db.loader import load_data
+
+            data_dir = str(backend_dir / "data" / "synthetic")
+            await load_data(data_dir)
+            logger.info("synthetic_data_loaded", path=data_dir)
+        else:
+            logger.info("synthetic_data_seed_skipped", reason="SEED_DATA_ON_STARTUP=false")
+    except Exception as exc:
+        logger.warning("synthetic_data_load_failed", error=str(exc))
 
     yield  # Application is running
 
@@ -117,12 +144,11 @@ def create_app() -> FastAPI:
     # ---- CORS ----
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.cors_allowed_origins_list,
-        allow_origin_regex=r"https://.*\.run\.app|http://localhost:\d+",
+        allow_origin_regex=r"https?://.*",
         allow_credentials=True,
-        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
-        expose_headers=["X-Request-ID", "X-Process-Time"],
+        allow_methods=["*"],
+        allow_headers=["*"],
+        expose_headers=["X-Request-ID", "X-Process-Time", "Authorization"],
     )
 
     # ---- Request timing + correlation ID middleware ----
