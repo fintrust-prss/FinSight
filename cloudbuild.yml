@@ -148,7 +148,7 @@ images:
 substitutions:
   _REGION: 'us-central1'
   _REPOSITORY: 'msme-healthcard'
-  _DB_HOST: '35.253.187.42'  # Format: project:region:instance
+  _DB_HOST: '/cloudsql/project-90c2d7bc-ca5b-4203-bd7:us-central1:msme-postgres'
   _DB_PORT: '5432'
   _DB_NAME: 'msme_healthcard'
   _BACKEND_URL: 'msme-backend-1030524684072.us-central1.run.app'

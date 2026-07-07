@@ -57,7 +57,7 @@ class Settings(BaseSettings):
         """Construct async SQLAlchemy database URL from components."""
         return (
             f"postgresql+asyncpg://{self.postgres_user}:{self.postgres_password}"
-            f"@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
+            f"@/{self.postgres_db}?host={self.postgres_host}"
         )
 
     # ---- JWT ----
