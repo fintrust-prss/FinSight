@@ -256,7 +256,7 @@ export default function HealthCardPage() {
               >
                 {tab === 'radar' && '◎ Radar'}
                 {tab === 'gauge' && '◐ Gauge'}
-                {tab === 'shap' && '✦ Why This Score'}
+                {/* {tab === 'shap' && '✦ Why This Score'} */}
               </button>
             ))}
           </div>
@@ -403,7 +403,7 @@ export default function HealthCardPage() {
           )}
 
           {/* ── SHAP / Why This Score ── */}
-          {activeTab === 'shap' && (
+          {/* {activeTab === 'shap' && (
             <div className="chart-panel" role="tabpanel" aria-labelledby="tab-shap">
               <h2 className="chart-title">Why This Score?</h2>
               <p className="chart-subtitle">
@@ -469,7 +469,7 @@ export default function HealthCardPage() {
                 </div>
               )}
             </div>
-          )}
+          )} */}
         </div>
       )}
 

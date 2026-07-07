@@ -39,7 +39,10 @@ if config.config_file_name is not None:
 
 # Set the database URL from our app settings
 settings = get_settings()
-config.set_main_option("sqlalchemy.url", settings.database_url)
+# ConfigParser used by Alembic treats '%' as interpolation marker. Escape
+# any percent signs (e.g. in passwords like 'Msme%402026') by doubling them
+# so the raw URL is preserved when passed to Alembic.
+config.set_main_option("sqlalchemy.url", settings.database_url.replace('%', '%%'))
 
 target_metadata = Base.metadata
 
